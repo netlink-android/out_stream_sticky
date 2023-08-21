@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+
+    <script
+      type="text/javascript"
+      src="//imasdk.googleapis.com/js/sdkloader/ima3.js"
+    ></script>
+    <script type="text/javascript" src="application.js"></script>
+    <script type="text/javascript" src="ads.js"></script>
+    <script type="text/javascript" src="video_player.js"></script>
+    <title>OutStream Video Ads</title>
+  </head>
+  <body>
+    <div id="mainSticky">
+      <div id="container">
+        <div id="videoplayer">
+          <video id="content"></video>
+          <div id="adcontainer"></div>
+          <button id="playpause" title="Play/Pause">&#9654;</button>
+          <!-- <button id="fullscreen" title="Full screen">
+          [&nbsp;&nbsp;&nbsp;]
+        </button> -->
+          <button id="mute" title="Mute">🔈</button>
+        </div>
+
+        <div id="customClick">
+          <div id="customClickTextWrapper">
+            Click here for more info on your ad.
+          </div>
+        </div>
+        <div id="companionDiv">
+          <script type="text/javascript">
+            googletag.cmd.push(function () {
+              googletag.display("companionDiv");
+            });
+          </script>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var application = null;
+      window.onload = function () {
+        application = new Application();
+      };
+    </script>
+  </body>
+</html>
