@@ -34,16 +34,6 @@ var Ads = function (application, videoPlayer) {
     false,
     this
   );
-
-  // this.adsLoader.addEventListener(
-  //   google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-  //   function (event) {
-  //     this.adsManager = event.getAdsManager();
-  //     this.adsManager.init(width, height, google.ima.ViewMode.NORMAL);
-  //     this.adsManager.setVolume(0); // Tắt tiếng
-
-  //   }
-  // );
 };
 
 // On iOS and Android devices, video playback must begin in a user action.
@@ -129,6 +119,25 @@ Ads.prototype.startAdsManager_ = function (adsManager) {
     false,
     this
   );
+  adsManager.addEventListener(
+    google.ima.AdEvent.Type.COMPLETE,
+    this.onAdComplete_,
+    false,
+    this
+  );
+
+  adsManager.addEventListener(
+    google.ima.AdEvent.Type.LOADED,
+    this.onAdLoaded_,
+    false,
+    this
+  );
+  adsManager.addEventListener(
+    google.ima.AdEvent.Type.STARTED,
+    this.onAdStarted_,
+    false,
+    this
+  );
 
   // Handle errors.
   adsManager.addEventListener(
@@ -165,6 +174,20 @@ Ads.prototype.startAdsManager_ = function (adsManager) {
   adsManager.start();
 };
 
+Ads.prototype.onAdComplete_ = function () {
+  this.application_.close();
+};
+Ads.prototype.onAdLoaded_ = function () {
+  this.application_.autoplayAds_();
+};
+Ads.prototype.onAdStarted_ = function () {
+  if (this.adsManager_) {
+    var timer = this.adsManager_.getRemainingTime();
+
+    this.application_.countdownUi(timer);
+  }
+};
+
 Ads.prototype.onContentPauseRequested_ = function () {
   this.application_.pauseForAd();
   this.application_.setVideoEndedCallbackEnabled(false);
@@ -181,7 +204,7 @@ Ads.prototype.onContentResumeRequested_ = function () {
 
 Ads.prototype.onAdEvent_ = function (adEvent) {
   this.application_.log("Ad event: " + adEvent.type);
-
+  // this.application_.countdownUi(this.adsManager_.getRemainingTime());
   if (adEvent.type == google.ima.AdEvent.Type.CLICK) {
     this.application_.adClicked();
   } else if (adEvent.type == google.ima.AdEvent.Type.LOADED) {

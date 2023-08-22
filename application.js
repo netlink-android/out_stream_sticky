@@ -1,5 +1,9 @@
 const Application = function () {
+  this.mainSticky = document.getElementById("mainSticky");
   this.playButton_ = document.getElementById("playpause");
+  window.addEventListener("scroll", function () {
+    mainSticky.style.display = "block";
+  });
   this.playButton_.addEventListener(
     "click",
     this.bind_(this, this.onClick_),
@@ -7,12 +11,31 @@ const Application = function () {
   );
   this.mute_ = document.getElementById("mute");
   this.mute_.addEventListener("click", this.bind_(this, this.onMute_), false);
-  // this.fullscreenButton_ = document.getElementById("fullscreen");
-  // this.fullscreenButton_.addEventListener(
-  //   "click",
-  //   this.bind_(this, this.onFullscreenClick_),
-  //   false
-  // );
+  this.fullscreenButton_ = document.getElementById("fullscreen");
+  this.fullscreenButton_.addEventListener(
+    "click",
+    this.bind_(this, this.onFullscreenClick_),
+    false
+  );
+
+  //removeAds
+  this.close_ = document.getElementById("closeAds");
+  this.close_.addEventListener("click", this.bind_(this, this.remove_), false);
+  this.close_.style.display = "none";
+
+  //ReloadAds
+  this.reloadAds_ = document.getElementById("reloadAds");
+  this.reloadAds_.addEventListener(
+    "click",
+    this.bind_(this, this.onClick_),
+    false
+  );
+  this.reloadAds_.style.display = "none";
+
+  //progess
+  countdownUi = document.getElementById("countdownUi");
+  progressAds = document.getElementById("progressAds");
+  //full screen
   this.fullscreenWidth = null;
   this.fullscreenHeight = null;
   const fullScreenEvents = [
@@ -40,6 +63,7 @@ const Application = function () {
 };
 
 Application.prototype.SAMPLE_AD_TAG_ =
+  // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/outstream_video_OO&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=300x250%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
   "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=1x1%7C300x250%7C640x480%7C1920x1080&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
 
 /**
@@ -54,7 +78,24 @@ Application.prototype.setVideoEndedCallbackEnabled = function (enable) {
   }
 };
 
-Application.prototype.log = function (message) {};
+Application.prototype.log = function (message) {
+  console.log(message);
+};
+
+Application.prototype.countdownUi = function (timer) {
+  progressAds.max = timer;
+  setInterval(function () {
+    var distance = parseInt(timer);
+    progressAds.value = timer;
+    var minutes = Math.floor((distance % (60 * 60)) / 60);
+    var seconds = Math.floor(distance % 60);
+
+    if (!this.playing_) {
+      timer--;
+    }
+    countdownUi.innerHTML = minutes + ":" + seconds;
+  }, 1000);
+};
 
 /**
  * Handles resuming content following ads.
@@ -63,6 +104,22 @@ Application.prototype.resumeAfterAd = function () {
   this.videoPlayer_.play();
   this.adsActive_ = false;
   this.updateChrome_();
+};
+Application.prototype.close = function () {
+  this.playButton_.style.display = "none";
+  this.fullscreenButton_.style.display = "none";
+  this.mute_.style.display = "none";
+  this.close_.style.display = "block";
+  this.reloadAds_.style.display = "block";
+  // this.onClick_();
+};
+Application.prototype.remove_ = function () {
+  setTimeout(() => {
+    mainSticky.style.display = "none";
+  }, 1000); //
+};
+Application.prototype.autoplayAds_ = function () {
+  this.playButton_.click();
 };
 
 /**
@@ -117,13 +174,6 @@ Application.prototype.onClick_ = function () {
       this.ads_.resume();
     }
   }
-  // else {
-  //   if (this.playing_) {
-  //     this.videoPlayer_.pause();
-  //   } else {
-  //     this.videoPlayer_.play();
-  //   }
-  // }
 
   this.playing_ = !this.playing_;
 
@@ -234,7 +284,7 @@ Application.prototype.onFullscreenChange_ = function () {
     const height = this.fullscreenHeight;
     this.makeAdsFullscreen_();
     // Make the video take up the entire screen
-    this.videoPlayer_.resize("absolute", 0, 0, width, height);
+    this.videoPlayer_.resize("relative", 0, 0, width, height);
     this.fullscreen = true;
   }
 };
