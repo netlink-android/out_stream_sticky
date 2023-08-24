@@ -1,5 +1,4 @@
 var time = null;
-var timerRunning = false;
 var progessValue = 0;
 const Application = function () {
   this.mainSticky = document.getElementById("mainSticky");
@@ -56,14 +55,13 @@ const Application = function () {
   this.adsActive_ = false;
   this.adsDone_ = false;
   this.fullscreen = false;
-  this.adsMute_ = false;
+  this.adsMute_ = true;
   this.videoPlayer_ = new VideoPlayer();
-  this.ads_ = new Ads(this, this.videoPlayer_);
+  this.ads_ = new Ads(this, this.videoPlayer_, this.adsMute_);
   this.adTagUrl_ = "";
   this.videoEndedCallback_ = this.bind_(this, this.onContentEnded_);
   this.setVideoEndedCallbackEnabled(true);
   window.addEventListener("scroll", function () {
-    // this.autoOnClick_();
     mainSticky.style.display = "block";
   });
 };
@@ -143,7 +141,7 @@ Application.prototype.remove_ = function () {
   //
 };
 Application.prototype.autoplayAds_ = function () {
-  this.playButton_.click();
+  // this.playButton_.click();
 };
 
 /**
@@ -160,7 +158,9 @@ Application.prototype.pauseForAd = function () {
  * Pauses video on ad clicks.
  */
 Application.prototype.adClicked = function () {
-  this.updateChrome_();
+  if (this.playing_) {
+    this.playButton_.click();
+  }
 };
 
 /**
@@ -177,7 +177,7 @@ Application.prototype.bind_ = function (thisObj, fn) {
 Application.prototype.onClick_ = function () {
   if (!this.adsDone_) {
     this.adTagUrl_ = this.SAMPLE_AD_TAG_;
-    this.ads_.initialUserAction();
+    
     this.videoPlayer_.preloadContent(this.bind_(this, this.loadAds_));
     this.adsDone_ = true;
     return;
@@ -201,12 +201,11 @@ Application.prototype.onClick_ = function () {
 Application.prototype.onMute_ = function () {
   if (this.adsActive_) {
     if (this.adsMute_) {
-      this.ads_.mute();
-    } else {
       this.ads_.unmute();
+    } else {
+      this.ads_.mute();
     }
   }
-
   this.adsMute_ = !this.adsMute_;
 
   this.updateMuted_();
@@ -214,9 +213,9 @@ Application.prototype.onMute_ = function () {
 
 Application.prototype.updateMuted_ = function () {
   if (this.adsMute_) {
-    this.mute_.textContent = "🔇";
-  } else {
     this.mute_.textContent = "🔈";
+  } else {
+    this.mute_.textContent = "🔇";
   }
 };
 

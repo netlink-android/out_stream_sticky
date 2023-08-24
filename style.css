@@ -28,7 +28,7 @@ body {
 .mainSticky--transition {
   transform: translateY(500px);
   opacity: 0;
-  display: none
+  display: none;
 }
 
 #playpause {
@@ -93,6 +93,7 @@ body {
 #companionDiv,
 #customClick {
   width: 728px;
+  display: none;
 }
 #customClick {
   background-color: #807f80;
@@ -103,6 +104,7 @@ body {
 #customClickTextWrapper {
   display: table-cell;
   vertical-align: middle;
+  display: none;
 }
 
 #mute {
@@ -192,12 +194,16 @@ body {
   line-height: 0;
 }
 
-#progressAds{
+#progressAds {
   position: absolute;
   background-color: rgb(80, 97, 5);
   height: 3px;
   width: 100%;
   bottom: 0;
 }
-progress::-moz-progress-bar { background: rgb(209, 126, 1); }
-progress::-webkit-progress-value { background: rgb(209, 126, 1);; }
+progress::-moz-progress-bar {
+  background: rgb(209, 126, 1);
+}
+progress::-webkit-progress-value {
+  background: rgb(209, 126, 1);
+}

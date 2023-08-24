@@ -6,9 +6,10 @@
 /**
  * Shows how to use the IMA SDK to request and display ads.
  */
-var Ads = function (application, videoPlayer) {
+var Ads = function (application, videoPlayer, isMuted) {
   this.application_ = application;
   this.videoPlayer_ = videoPlayer;
+  this.isMuted = isMuted;
   this.customClickDiv_ = document.getElementById("customClick");
   this.contentCompleteCalled_ = false;
   google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
@@ -57,15 +58,11 @@ Ads.prototype.requestAds = function (adTagUrl) {
 
 // muted
 Ads.prototype.mute = function () {
-  if (this.adsManager_) {
-    this.adsManager_.setVolume(1);
-  }
+  this.adsManager_.setVolume(1);
 };
 
 Ads.prototype.unmute = function () {
-  if (this.adsManager_) {
-    this.adsManager_.setVolume(0);
-  }
+  this.adsManager_.setVolume(0);
 };
 
 Ads.prototype.pause = function () {
@@ -106,6 +103,12 @@ Ads.prototype.startAdsManager_ = function (adsManager) {
   if (adsManager.isCustomClickTrackingUsed()) {
     this.customClickDiv_.style.display = "table";
   }
+  if (this.isMuted) {
+    this.adsManager_.setVolume(1);
+  } else {
+    this.adsManager_.setVolume(0);
+  }
+
   // Attach the pause/resume events.
   adsManager.addEventListener(
     google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
@@ -181,12 +184,11 @@ Ads.prototype.onAdLoaded_ = function () {
   this.application_.autoplayAds_();
   if (this.adsManager_) {
   }
+};
+Ads.prototype.onAdStarted_ = function () {
   var timer = this.adsManager_.getRemainingTime();
-
   this.application_.countdownUi(timer);
 };
-Ads.prototype.onAdStarted_ = function () {};
-
 Ads.prototype.onContentPauseRequested_ = function () {
   this.application_.pauseForAd();
   this.application_.setVideoEndedCallbackEnabled(false);
@@ -211,6 +213,7 @@ Ads.prototype.onAdEvent_ = function (adEvent) {
     if (!ad.isLinear()) {
       this.onContentResumeRequested_();
     }
+  } else if (adEvent.type == google.ima.AdEvent.Type.MIDPOINT) {
   }
 };
 
