@@ -180,14 +180,11 @@ Ads.prototype.startAdsManager_ = function (adsManager) {
 Ads.prototype.onAdComplete_ = function () {
   this.application_.close();
 };
-Ads.prototype.onAdLoaded_ = function () {
-  this.application_.autoplayAds_();
-  if (this.adsManager_) {
-  }
-};
+Ads.prototype.onAdLoaded_ = function () {};
 Ads.prototype.onAdStarted_ = function () {
   var timer = this.adsManager_.getRemainingTime();
   this.application_.countdownUi(timer);
+  this.application_.autoplayAds_();
 };
 Ads.prototype.onContentPauseRequested_ = function () {
   this.application_.pauseForAd();
