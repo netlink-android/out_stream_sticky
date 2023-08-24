@@ -219,6 +219,9 @@ Ads.prototype.onAdEvent_ = function (adEvent) {
 
 Ads.prototype.onAdError_ = function (adErrorEvent) {
   this.application_.log("Ad error: " + adErrorEvent.getError().toString());
+  setTimeout(() => {
+    this.application_.loadAds_();
+  }, 10000);
   if (this.adsManager_) {
     this.adsManager_.destroy();
   }
