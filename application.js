@@ -1,14 +1,16 @@
+var time = null;
+var timerRunning = false;
+var progessValue = 0;
 const Application = function () {
   this.mainSticky = document.getElementById("mainSticky");
   this.playButton_ = document.getElementById("playpause");
-  window.addEventListener("scroll", function () {
-    mainSticky.style.display = "block";
-  });
+
   this.playButton_.addEventListener(
     "click",
     this.bind_(this, this.onClick_),
     false
   );
+
   this.mute_ = document.getElementById("mute");
   this.mute_.addEventListener("click", this.bind_(this, this.onMute_), false);
   this.fullscreenButton_ = document.getElementById("fullscreen");
@@ -60,9 +62,22 @@ const Application = function () {
   this.adTagUrl_ = "";
   this.videoEndedCallback_ = this.bind_(this, this.onContentEnded_);
   this.setVideoEndedCallbackEnabled(true);
+  window.addEventListener("scroll", function () {
+    // this.autoOnClick_();
+    mainSticky.style.display = "block";
+  });
 };
+function autoOnClick_() {
+  var autoplayButton_ = document.getElementById("playpause");
+  autoplayButton_.click();
+}
 
 Application.prototype.SAMPLE_AD_TAG_ =
+  // "https://pubads.g.doubleclick.net/" +
+  // "gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&" +
+  // "cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&" +
+  // "gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&" +
+  // "correlator=";
   // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/outstream_video_OO&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=300x250%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
   "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=1x1%7C300x250%7C640x480%7C1920x1080&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
 
@@ -84,18 +99,26 @@ Application.prototype.log = function (message) {
 
 Application.prototype.countdownUi = function (timer) {
   progressAds.max = timer;
-  setInterval(function () {
-    var distance = parseInt(timer);
-    progressAds.value = timer;
-    var minutes = Math.floor((distance % (60 * 60)) / 60);
-    var seconds = Math.floor(distance % 60);
-
-    if (!this.playing_) {
-      timer--;
-    }
-    countdownUi.innerHTML = minutes + ":" + seconds;
-  }, 1000);
+  progessValue = timer;
+  countdownTimer();
 };
+
+function countdownTimer() {
+  time = setInterval(function () {
+    progressAds.value = progessValue;
+    var minutes = Math.floor((progessValue % (60 * 60)) / 60);
+    var seconds = Math.floor(progessValue % 60);
+    if (progessValue > 0) {
+      progessValue--;
+    } else {
+      countdownUi.style.display = "none";
+    }
+    countdownUi.innerHTML =
+      (minutes > 11 ? minutes : "0" + minutes) +
+      ":" +
+      (seconds >= 10 ? seconds : "0" + seconds);
+  }, 1000);
+}
 
 /**
  * Handles resuming content following ads.
@@ -114,9 +137,10 @@ Application.prototype.close = function () {
   // this.onClick_();
 };
 Application.prototype.remove_ = function () {
-  setTimeout(() => {
-    mainSticky.style.display = "none";
-  }, 1000); //
+  mainSticky.classList.add("mainSticky--transition");
+
+  // mainSticky.style.display = "none";
+  //
 };
 Application.prototype.autoplayAds_ = function () {
   this.playButton_.click();
@@ -150,14 +174,6 @@ Application.prototype.bind_ = function (thisObj, fn) {
     fn.apply(thisObj, arguments);
   };
 };
-
-/**
- * Set the sample ad tag as the ad tag box's value.
- */
-
-/**
- * Handles pausing the content or ads for ad clicks.
- */
 Application.prototype.onClick_ = function () {
   if (!this.adsDone_) {
     this.adTagUrl_ = this.SAMPLE_AD_TAG_;
@@ -170,8 +186,10 @@ Application.prototype.onClick_ = function () {
   if (this.adsActive_) {
     if (this.playing_) {
       this.ads_.pause();
+      clearInterval(time);
     } else {
       this.ads_.resume();
+      countdownTimer();
     }
   }
 
@@ -202,9 +220,6 @@ Application.prototype.updateMuted_ = function () {
   }
 };
 
-/**
- * Handles making the video fullscreen, or renturning from fullscreen.
- */
 Application.prototype.onFullscreenClick_ = function () {
   if (this.fullscreen) {
     // The video is currently in fullscreen mode

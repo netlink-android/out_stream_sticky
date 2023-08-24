@@ -179,14 +179,13 @@ Ads.prototype.onAdComplete_ = function () {
 };
 Ads.prototype.onAdLoaded_ = function () {
   this.application_.autoplayAds_();
-};
-Ads.prototype.onAdStarted_ = function () {
   if (this.adsManager_) {
-    var timer = this.adsManager_.getRemainingTime();
-
-    this.application_.countdownUi(timer);
   }
+  var timer = this.adsManager_.getRemainingTime();
+
+  this.application_.countdownUi(timer);
 };
+Ads.prototype.onAdStarted_ = function () {};
 
 Ads.prototype.onContentPauseRequested_ = function () {
   this.application_.pauseForAd();
