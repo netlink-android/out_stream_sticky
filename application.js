@@ -58,7 +58,6 @@ const Application = function () {
   this.adTagUrl_ = "";
   this.videoEndedCallback_ = this.bind_(this, this.onContentEnded_);
   this.setVideoEndedCallbackEnabled(true);
-  window.addEventListener("scroll", function () {});
   setTimeout(autoOnClick_, 3000);
 };
 function autoOnClick_() {
@@ -71,8 +70,8 @@ Application.prototype.SAMPLE_AD_TAG_ =
   // "cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&" +
   // "gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&" +
   // "correlator=";
-  // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/outstream_video_OO&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=300x250%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
-  "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=1x1%7C300x250%7C640x480%7C1920x1080&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+  "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/outstream_video_OO&description_url=http%3A%2F%2Fnetlink.vn&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+// "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
 
 /**
  * Registers or removes video ended callback based on the 'enable' param.
@@ -126,7 +125,7 @@ Application.prototype.close = function () {
   this.fullscreenButton_.style.display = "none";
   this.mute_.style.display = "none";
   this.close_.style.display = "block";
-  this.reloadAds_.style.display = "block";
+  // this.reloadAds_.style.display = "block";
   // this.onClick_();
 };
 Application.prototype.remove_ = function () {

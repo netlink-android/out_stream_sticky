@@ -6,6 +6,7 @@
 /**
  * Shows how to use the IMA SDK to request and display ads.
  */
+var count = 1;
 var Ads = function (application, videoPlayer, isMuted) {
   this.application_ = application;
   this.videoPlayer_ = videoPlayer;
@@ -37,10 +38,6 @@ var Ads = function (application, videoPlayer, isMuted) {
   );
 };
 
-// On iOS and Android devices, video playback must begin in a user action.
-// AdDisplayContainer provides a initialize() API to be called at appropriate
-// time.
-// This should be called when the user clicks or taps.
 Ads.prototype.initialUserAction = function () {
   this.adDisplayContainer_.initialize();
   this.videoPlayer_.contentPlayer.load();
@@ -49,10 +46,10 @@ Ads.prototype.initialUserAction = function () {
 Ads.prototype.requestAds = function (adTagUrl) {
   var adsRequest = new google.ima.AdsRequest();
   adsRequest.adTagUrl = adTagUrl;
-  adsRequest.linearAdSlotWidth = this.videoPlayer_.width;
-  adsRequest.linearAdSlotHeight = this.videoPlayer_.height;
-  adsRequest.nonLinearAdSlotWidth = this.videoPlayer_.width;
-  adsRequest.nonLinearAdSlotHeight = this.videoPlayer_.height;
+  adsRequest.linearAdSlotWidth = 640;
+  adsRequest.linearAdSlotHeight = 480;
+  adsRequest.nonLinearAdSlotWidth = 640;
+  adsRequest.nonLinearAdSlotHeight = 480;
   this.adsLoader_.requestAds(adsRequest);
 };
 
@@ -216,9 +213,17 @@ Ads.prototype.onAdEvent_ = function (adEvent) {
 
 Ads.prototype.onAdError_ = function (adErrorEvent) {
   this.application_.log("Ad error: " + adErrorEvent.getError().toString());
-  setTimeout(() => {
-    this.application_.loadAds_();
-  }, 10000);
+  if (count <= 3) {
+    setTimeout(() => {
+      this.application_.loadAds_();
+    }, 10000);
+    count++;
+  } else {
+    var bannerAfter = document.getElementById("div-gpt-ad-1692948587499-0");
+    googletag.cmd.push(function () {
+      googletag.display("div-gpt-ad-1692948587499-0");
+    });
+  }
   if (this.adsManager_) {
     this.adsManager_.destroy();
   }

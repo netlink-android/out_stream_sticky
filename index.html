@@ -2,7 +2,24 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="style.css" />
-
+    <script
+      async
+      src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"
+    ></script>
+    <script>
+      window.googletag = window.googletag || { cmd: [] };
+      googletag.cmd.push(function () {
+        googletag
+          .defineSlot(
+            "/93656639/300x250_campaign",
+            [300, 250],
+            "div-gpt-ad-1692948587499-0"
+          )
+          .addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+      });
+    </script>
     <script
       type="text/javascript"
       src="//imasdk.googleapis.com/js/sdkloader/ima3.js"
@@ -31,22 +48,19 @@
           </div>
 
           <div id="customClick">
-            <div id="customClickTextWrapper">
-              Click here for more info on your ad.
-            </div>
+            <div id="customClickTextWrapper"></div>
           </div>
-          <div id="companionDiv">
-            <script type="text/javascript">
-              googletag.cmd.push(function () {
-                googletag.display("companionDiv");
-              });
-            </script>
-          </div>
+          <div id="companionDiv"></div>
         </div>
+      </div>
+      <div id="bannerAfter">
+        <div id="div-gpt-ad-1692948587499-0"></div>
       </div>
       <div class="row">
         <div class="col">
           <h2>Section 1</h2>
+          <!-- /93656639/300x250_campaign -->
+
           <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non
             risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing

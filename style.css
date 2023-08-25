@@ -207,3 +207,13 @@ progress::-moz-progress-bar {
 progress::-webkit-progress-value {
   background: rgb(209, 126, 1);
 }
+
+#bannerAfter {
+  position: fixed;
+  left: 0px;
+  bottom: 0px;
+  height: 250px;
+  width: 300px;
+  cursor: pointer;
+  line-height: 0;
+}
