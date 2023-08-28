@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <!-- <link rel="stylesheet" type="text/css" href="style.css" /> -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
     <script
       async
       src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"
@@ -20,7 +22,6 @@
         googletag.enableServices();
       });
     </script>
-    <script></script>
     <script
       type="text/javascript"
       src="//imasdk.googleapis.com/js/sdkloader/ima3.js"
@@ -275,12 +276,10 @@
 
           closeBanner.addEventListener("click", function () {
             if (isClose) {
-              closeBanner.title = "Close";
               closeBanner.innerHTML = "&#709;";
               bannerAfter.classList.remove("bannerAfterClose--transition");
               closeBanner.classList.remove("closeBanner--transition");
             } else {
-              closeBanner.title = "Open";
               closeBanner.innerHTML = "&#708;";
               bannerAfter.classList.add("bannerAfterClose--transition");
               closeBanner.classList.add("closeBanner--transition");
@@ -510,8 +509,11 @@
         playButton_.style.display = "none";
         this.fullscreenButton_.style.display = "none";
         this.mute_.style.display = "none";
-        // this.close_.style.display = "block";
+        this.close_.style.display = "block";
         // this.reloadAds_.style.display = "block";
+        // this.onClick_();
+      };
+      Application.prototype.remove_ = function () {
         mainSticky.classList.add("mainSticky--transition");
         var bannerAfter = document.getElementById("bannerAfter");
         var closeBanner = document.getElementById("closeBanner");
@@ -525,12 +527,10 @@
         });
         closeBanner.addEventListener("click", function () {
           if (isClose) {
-            closeBanner.title = "Close";
             closeBanner.innerHTML = "&#709;";
             bannerAfter.classList.remove("bannerAfterClose--transition");
             closeBanner.classList.remove("closeBanner--transition");
           } else {
-            closeBanner.title = "Open";
             closeBanner.innerHTML = "&#708;";
             bannerAfter.classList.add("bannerAfterClose--transition");
             closeBanner.classList.add("closeBanner--transition");
@@ -538,7 +538,6 @@
           isClose = !isClose;
         });
       };
-      Application.prototype.remove_ = function () {};
       Application.prototype.autoplayAds_ = function () {
         mainSticky.style.display = "block";
       };
@@ -741,11 +740,11 @@
       #mainSticky {
         position: fixed;
         bottom: 0;
-        left: 0;
+        right: 0;
         display: none;
         opacity: 1;
         transition: transform 0.5s, opacity 0.5s;
-        z-index: 10000;
+        z-index: 1;
       }
       .mainSticky--transition {
         transform: translateY(500px);
@@ -932,17 +931,16 @@
 
       #bannerAfter {
         position: fixed;
-        left: 0;
+        right: 0;
         bottom: 0px;
         height: 250px;
         width: 300px;
         transition: transform 0.7s;
-        z-index: 9999;
       }
 
       #closeBanner {
         position: absolute;
-        left: 0px;
+        right: 0px;
         top: -20px;
         height: 20px;
         display: none;
@@ -951,11 +949,9 @@
         font-weight: bold;
         font-size: 20px;
         background-color: #fff;
-        border-radius: 5px 0 0 0;
+        border-radius: 2px;
+        border-color: #000;
         cursor: pointer;
-        border-top: 2px solid #e1e1e1;
-        border-left: 2px solid #e1e1e1;
-        border-right: 2px solid #e1e1e1;
         transition: transform 0.7s;
       }
       .bannerAfterClose--transition {
@@ -982,7 +978,9 @@
         <progress id="progressAds"></progress>
       </div>
       <div id="customClick">
-        <div id="customClickTextWrapper"></div>
+        <div id="customClickTextWrapper">
+          Click here for more info on your ad.
+        </div>
       </div>
       <div id="companionDiv"></div>
     </div>
