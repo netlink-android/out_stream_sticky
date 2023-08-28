@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="style.css" /> -->
     <script
       async
       src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"
@@ -458,18 +458,7 @@
       }
 
       Application.prototype.SAMPLE_AD_TAG_ =
-        // "https://pubads.g.doubleclick.net/" +
-        // "gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&" +
-        // "cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&" +
-        // "gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&" +
-        // "correlator=";
-        // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/outstream_video_OO&description_url=http%3A%2F%2Fnetlink.vn&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
         "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
-
-      /**
-       * Registers or removes video ended callback based on the 'enable' param.
-       * @param {boolean} enable
-       */
       Application.prototype.setVideoEndedCallbackEnabled = function (enable) {
         if (enable) {
           this.videoPlayer_.registerVideoEndedCallback(
@@ -750,6 +739,7 @@
       #mainSticky {
         position: fixed;
         bottom: 0;
+        right: 0;
         display: none;
         opacity: 1;
         transition: transform 0.5s, opacity 0.5s;
@@ -940,14 +930,13 @@
 
       #bannerAfter {
         position: fixed;
-        left: 0px;
+        right: 0;
         bottom: 0px;
         height: 250px;
         width: 300px;
-        cursor: pointer;
-        /* line-height: 0; */
         transition: transform 0.7s;
       }
+
       #closeBanner {
         position: absolute;
         right: 0px;
@@ -960,9 +949,8 @@
         font-size: 20px;
         background-color: #fff;
         border-radius: 2px;
-        cursor: pointer;
         border-color: #000;
-        line-height: 0;
+        cursor: pointer;
         transition: transform 0.7s;
       }
       .bannerAfterClose--transition {
@@ -974,36 +962,30 @@
     </style>
   </head>
   <body>
-    <div style="height: 5000px; width: 100%; background-color: yellowgreen">
-      <div id="mainSticky">
-        <div id="videoplayer">
-          <video id="content"></video>
-          <div id="adcontainer"></div>
-          <button id="playpause" title="Play/Pause">&#9654;</button>
-          <button id="fullscreen" title="Full screen">
-            [&nbsp;&nbsp;&nbsp;]
-          </button>
-          <button id="mute" title="Mute">🔈</button>
-          <button id="closeAds" title="Close">&#x2715;</button>
-          <button id="reloadAds" title="Reload">&#8634;</button>
-          <div id="countdownUi"></div>
-          <progress id="progressAds"></progress>
-        </div>
-
-        <div id="customClick">
-          <div id="customClickTextWrapper">
-            Click here for more info on your ad.
-          </div>
-        </div>
-
-        <!-- Declare a div where you want the companion to appear. Use
-                googletag.display() to make sure the ad is displayed. -->
-        <div id="companionDiv"></div>
+    <div id="mainSticky">
+      <div id="videoplayer">
+        <video id="content"></video>
+        <div id="adcontainer"></div>
+        <button id="playpause" title="Play/Pause">&#9654;</button>
+        <button id="fullscreen" title="Full screen">
+          [&nbsp;&nbsp;&nbsp;]
+        </button>
+        <button id="mute" title="Mute">🔈</button>
+        <button id="closeAds" title="Close">&#x2715;</button>
+        <button id="reloadAds" title="Reload">&#8634;</button>
+        <div id="countdownUi"></div>
+        <progress id="progressAds"></progress>
       </div>
-      <div id="bannerAfter">
-        <div id="div-gpt-ad-1692948587499-0"></div>
-        <button id="closeBanner" title="Close">&#709;</button>
+      <div id="customClick">
+        <div id="customClickTextWrapper">
+          Click here for more info on your ad.
+        </div>
       </div>
+      <div id="companionDiv"></div>
+    </div>
+    <div id="bannerAfter">
+      <div id="div-gpt-ad-1692948587499-0"></div>
+      <button id="closeBanner" title="Close">&#709;</button>
     </div>
     <script type="text/javascript">
       var application = null;
