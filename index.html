@@ -20,6 +20,7 @@
         googletag.enableServices();
       });
     </script>
+    <script></script>
     <script
       type="text/javascript"
       src="//imasdk.googleapis.com/js/sdkloader/ima3.js"
@@ -259,14 +260,30 @@
         if (count <= 3) {
           setTimeout(() => {
             this.application_.loadAds_();
-          }, 10000);
+          }, 1000);
           count++;
         } else {
-          var bannerAfter = document.getElementById(
-            "div-gpt-ad-1692948587499-0"
-          );
+          var bannerAfter = document.getElementById("bannerAfter");
+          var closeBanner = document.getElementById("closeBanner");
+          var isClose = false;
           googletag.cmd.push(function () {
             googletag.display("div-gpt-ad-1692948587499-0");
+            googletag.pubads().addEventListener("slotOnload", (event) => {
+              closeBanner.style.display = "block";
+            });
+          });
+
+          closeBanner.addEventListener("click", function () {
+            if (isClose) {
+              closeBanner.innerHTML = "&#709;";
+              bannerAfter.classList.remove("bannerAfterClose--transition");
+              closeBanner.classList.remove("closeBanner--transition");
+            } else {
+              closeBanner.innerHTML = "&#708;";
+              bannerAfter.classList.add("bannerAfterClose--transition");
+              closeBanner.classList.add("closeBanner--transition");
+            }
+            isClose = !isClose;
           });
         }
         if (this.adsManager_) {
@@ -399,11 +416,11 @@
 
         //ReloadAds
         this.reloadAds_ = document.getElementById("reloadAds");
-        this.reloadAds_.addEventListener(
-          "click",
-          this.bind_(this, this.onClick_),
-          false
-        );
+        // this.reloadAds_.addEventListener(
+        //   "click",
+        //   this.bind_(this, this.onClick_),
+        //   false
+        // );
         this.reloadAds_.style.display = "none";
 
         //progess
@@ -446,8 +463,8 @@
         // "cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&" +
         // "gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&" +
         // "correlator=";
-        "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/outstream_video_OO&description_url=http%3A%2F%2Fnetlink.vn&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
-      // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+        // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/outstream_video_OO&description_url=http%3A%2F%2Fnetlink.vn&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+        "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
 
       /**
        * Registers or removes video ended callback based on the 'enable' param.
@@ -508,9 +525,28 @@
       };
       Application.prototype.remove_ = function () {
         mainSticky.classList.add("mainSticky--transition");
+        var bannerAfter = document.getElementById("bannerAfter");
+        var closeBanner = document.getElementById("closeBanner");
 
-        // mainSticky.style.display = "none";
-        //
+        var isClose = false;
+        googletag.cmd.push(function () {
+          googletag.display("div-gpt-ad-1692948587499-0");
+          googletag.pubads().addEventListener("slotOnload", (event) => {
+            closeBanner.style.display = "block";
+          });
+        });
+        closeBanner.addEventListener("click", function () {
+          if (isClose) {
+            closeBanner.innerHTML = "&#709;";
+            bannerAfter.classList.remove("bannerAfterClose--transition");
+            closeBanner.classList.remove("closeBanner--transition");
+          } else {
+            closeBanner.innerHTML = "&#708;";
+            bannerAfter.classList.add("bannerAfterClose--transition");
+            closeBanner.classList.add("closeBanner--transition");
+          }
+          isClose = !isClose;
+        });
       };
       Application.prototype.autoplayAds_ = function () {
         mainSticky.style.display = "block";
@@ -716,7 +752,8 @@
         bottom: 0;
         display: none;
         opacity: 1;
-        transition: transform 0.3s, opacity 0.5s;
+        transition: transform 0.5s, opacity 0.5s;
+        z-index: 1;
       }
       .mainSticky--transition {
         transform: translateY(500px);
@@ -908,36 +945,64 @@
         height: 250px;
         width: 300px;
         cursor: pointer;
+        /* line-height: 0; */
+        transition: transform 0.7s;
+      }
+      #closeBanner {
+        position: absolute;
+        right: 0px;
+        top: -20px;
+        height: 20px;
+        display: none;
+        width: 40px;
+        border-style: none;
+        font-weight: bold;
+        font-size: 20px;
+        background-color: #fff;
+        border-radius: 2px;
+        cursor: pointer;
+        border-color: #000;
         line-height: 0;
+        transition: transform 0.7s;
+      }
+      .bannerAfterClose--transition {
+        transform: translateY(100%);
+      }
+      .closeBanner--transition {
+        transform: translateY(0%);
       }
     </style>
   </head>
   <body>
     <div style="height: 5000px; width: 100%; background-color: yellowgreen">
       <div id="mainSticky">
-        <div id="container">
-          <div id="videoplayer">
-            <video id="content"></video>
-            <div id="adcontainer"></div>
-            <button id="playpause" title="Play/Pause">&#9654;</button>
-            <button id="fullscreen" title="Full screen">
-              [&nbsp;&nbsp;&nbsp;]
-            </button>
-            <button id="mute" title="Mute">🔈</button>
-            <button id="closeAds" title="Close">&#x2715;</button>
-            <button id="reloadAds" title="Reload">&#8634;</button>
-            <div id="countdownUi"></div>
-            <progress id="progressAds"></progress>
-          </div>
-
-          <div id="customClick">
-            <div id="customClickTextWrapper"></div>
-          </div>
-          <div id="companionDiv"></div>
+        <div id="videoplayer">
+          <video id="content"></video>
+          <div id="adcontainer"></div>
+          <button id="playpause" title="Play/Pause">&#9654;</button>
+          <button id="fullscreen" title="Full screen">
+            [&nbsp;&nbsp;&nbsp;]
+          </button>
+          <button id="mute" title="Mute">🔈</button>
+          <button id="closeAds" title="Close">&#x2715;</button>
+          <button id="reloadAds" title="Reload">&#8634;</button>
+          <div id="countdownUi"></div>
+          <progress id="progressAds"></progress>
         </div>
+
+        <div id="customClick">
+          <div id="customClickTextWrapper">
+            Click here for more info on your ad.
+          </div>
+        </div>
+
+        <!-- Declare a div where you want the companion to appear. Use
+                googletag.display() to make sure the ad is displayed. -->
+        <div id="companionDiv"></div>
       </div>
       <div id="bannerAfter">
         <div id="div-gpt-ad-1692948587499-0"></div>
+        <button id="closeBanner" title="Close">&#709;</button>
       </div>
     </div>
     <script type="text/javascript">

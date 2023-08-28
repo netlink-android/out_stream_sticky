@@ -73,10 +73,6 @@ Application.prototype.SAMPLE_AD_TAG_ =
   "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/outstream_video_OO&description_url=http%3A%2F%2Fnetlink.vn&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
 // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
 
-/**
- * Registers or removes video ended callback based on the 'enable' param.
- * @param {boolean} enable
- */
 Application.prototype.setVideoEndedCallbackEnabled = function (enable) {
   if (enable) {
     this.videoPlayer_.registerVideoEndedCallback(this.videoEndedCallback_);
@@ -94,7 +90,6 @@ Application.prototype.countdownUi = function (timer) {
   progessValue = timer;
   countdownTimer();
 };
-
 function countdownTimer() {
   time = setInterval(function () {
     progressAds.value = progessValue;
@@ -110,12 +105,7 @@ function countdownTimer() {
       ":" +
       (seconds >= 10 ? seconds : "0" + seconds);
   }, 1000);
-}
-
-/**
- * Handles resuming content following ads.
- */
-Application.prototype.resumeAfterAd = function () {
+}Application.prototype.resumeAfterAd = function () {
   this.videoPlayer_.play();
   this.adsActive_ = false;
   this.updateChrome_();
@@ -130,39 +120,23 @@ Application.prototype.close = function () {
 };
 Application.prototype.remove_ = function () {
   mainSticky.classList.add("mainSticky--transition");
-
-  // mainSticky.style.display = "none";
-  //
 };
 Application.prototype.autoplayAds_ = function () {
   mainSticky.style.display = "block";
 };
-
-/**
- * Handles pausing content for ad breaks.
- */
 Application.prototype.pauseForAd = function () {
   this.adsActive_ = true;
   this.playing_ = true;
   this.videoPlayer_.pause();
   this.updateChrome_();
 };
-
-/**
- * Pauses video on ad clicks.
- */
 Application.prototype.adClicked = function () {
   if (this.playing_) {
     playButton_.click();
   }
 };
 
-/**
- * Function binding helper function.
- * @param {!Object} thisObj object to bind function.
- * @param {!Function} fn function being bound to object.
- * @return {!Function} returns the bound function.
- */
+
 Application.prototype.bind_ = function (thisObj, fn) {
   return function () {
     fn.apply(thisObj, arguments);
