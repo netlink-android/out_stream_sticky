@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <!-- <link rel="stylesheet" type="text/css" href="style.css" /> -->
     <script
       async
       src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"
@@ -22,6 +20,7 @@
         googletag.enableServices();
       });
     </script>
+    <script></script>
     <script
       type="text/javascript"
       src="//imasdk.googleapis.com/js/sdkloader/ima3.js"
@@ -80,10 +79,10 @@
       Ads.prototype.requestAds = function (adTagUrl) {
         var adsRequest = new google.ima.AdsRequest();
         adsRequest.adTagUrl = adTagUrl;
-        adsRequest.linearAdSlotWidth = 640;
-        adsRequest.linearAdSlotHeight = 480;
-        adsRequest.nonLinearAdSlotWidth = 640;
-        adsRequest.nonLinearAdSlotHeight = 480;
+        adsRequest.linearAdSlotWidth = this.videoPlayer_.width;
+        adsRequest.linearAdSlotHeight = this.videoPlayer_.height;
+        adsRequest.nonLinearAdSlotWidth = this.videoPlayer_.width;
+        adsRequest.nonLinearAdSlotHeight = this.videoPlayer_.height;
         this.adsLoader_.requestAds(adsRequest);
       };
 
@@ -261,7 +260,7 @@
         if (count <= 3) {
           setTimeout(() => {
             this.application_.loadAds_();
-          }, 1000);
+          }, 3000);
           count++;
         } else {
           var bannerAfter = document.getElementById("bannerAfter");
@@ -276,10 +275,12 @@
 
           closeBanner.addEventListener("click", function () {
             if (isClose) {
+              closeBanner.title = "Close";
               closeBanner.innerHTML = "&#709;";
               bannerAfter.classList.remove("bannerAfterClose--transition");
               closeBanner.classList.remove("closeBanner--transition");
             } else {
+              closeBanner.title = "Open";
               closeBanner.innerHTML = "&#708;";
               bannerAfter.classList.add("bannerAfterClose--transition");
               closeBanner.classList.add("closeBanner--transition");
@@ -446,7 +447,7 @@
         this.adsActive_ = false;
         this.adsDone_ = false;
         this.fullscreen = false;
-        this.adsMute_ = true;
+        this.adsMute_ = false;
         this.videoPlayer_ = new VideoPlayer();
         this.ads_ = new Ads(this, this.videoPlayer_, this.adsMute_);
         this.adTagUrl_ = "";
@@ -459,7 +460,10 @@
       }
 
       Application.prototype.SAMPLE_AD_TAG_ =
-        "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,22942653061/Tinmoi.vn_Oustream/Tinmoi.vn_Vast_Test&description_url=https%3A%2F%2Ftinmoi.vn%2F&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+        // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,22942653061/Tinmoi.vn_Oustream/Tinmoi.vn_Vast_Test&description_url=https%3A%2F%2Ftinmoi.vn%2F&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+      "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=400x300&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+      // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+      // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x360&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
       Application.prototype.setVideoEndedCallbackEnabled = function (enable) {
         if (enable) {
           this.videoPlayer_.registerVideoEndedCallback(
@@ -501,7 +505,7 @@
        * Handles resuming content following ads.
        */
       Application.prototype.resumeAfterAd = function () {
-        this.videoPlayer_.play();
+        // this.videoPlayer_.play();
         this.adsActive_ = false;
         this.updateChrome_();
       };
@@ -509,11 +513,8 @@
         playButton_.style.display = "none";
         this.fullscreenButton_.style.display = "none";
         this.mute_.style.display = "none";
-        this.close_.style.display = "block";
+        // this.close_.style.display = "block";
         // this.reloadAds_.style.display = "block";
-        // this.onClick_();
-      };
-      Application.prototype.remove_ = function () {
         mainSticky.classList.add("mainSticky--transition");
         var bannerAfter = document.getElementById("bannerAfter");
         var closeBanner = document.getElementById("closeBanner");
@@ -527,10 +528,12 @@
         });
         closeBanner.addEventListener("click", function () {
           if (isClose) {
+            closeBanner.title = "Close";
             closeBanner.innerHTML = "&#709;";
             bannerAfter.classList.remove("bannerAfterClose--transition");
             closeBanner.classList.remove("closeBanner--transition");
           } else {
+            closeBanner.title = "Open";
             closeBanner.innerHTML = "&#708;";
             bannerAfter.classList.add("bannerAfterClose--transition");
             closeBanner.classList.add("closeBanner--transition");
@@ -538,6 +541,7 @@
           isClose = !isClose;
         });
       };
+      Application.prototype.remove_ = function () {};
       Application.prototype.autoplayAds_ = function () {
         mainSticky.style.display = "block";
       };
@@ -740,11 +744,11 @@
       #mainSticky {
         position: fixed;
         bottom: 0;
-        right: 0;
+        left: 0;
         display: none;
         opacity: 1;
         transition: transform 0.5s, opacity 0.5s;
-        z-index: 1;
+        z-index: 10000;
       }
       .mainSticky--transition {
         transform: translateY(500px);
@@ -931,16 +935,17 @@
 
       #bannerAfter {
         position: fixed;
-        right: 0;
+        left: 0;
         bottom: 0px;
         height: 250px;
         width: 300px;
         transition: transform 0.7s;
+        z-index: 9999;
       }
 
       #closeBanner {
         position: absolute;
-        right: 0px;
+        left: 0px;
         top: -20px;
         height: 20px;
         display: none;
@@ -949,9 +954,11 @@
         font-weight: bold;
         font-size: 20px;
         background-color: #fff;
-        border-radius: 2px;
-        border-color: #000;
+        border-radius: 5px 0 0 0;
         cursor: pointer;
+        border-top: 2px solid #e1e1e1;
+        border-left: 2px solid #e1e1e1;
+        border-right: 2px solid #e1e1e1;
         transition: transform 0.7s;
       }
       .bannerAfterClose--transition {
@@ -971,16 +978,14 @@
         <button id="fullscreen" title="Full screen">
           [&nbsp;&nbsp;&nbsp;]
         </button>
-        <button id="mute" title="Mute">🔈</button>
+        <button id="mute" title="Mute">🔇</button>
         <button id="closeAds" title="Close">&#x2715;</button>
         <button id="reloadAds" title="Reload">&#8634;</button>
         <div id="countdownUi"></div>
         <progress id="progressAds"></progress>
       </div>
       <div id="customClick">
-        <div id="customClickTextWrapper">
-          Click here for more info on your ad.
-        </div>
+        <div id="customClickTextWrapper"></div>
       </div>
       <div id="companionDiv"></div>
     </div>
