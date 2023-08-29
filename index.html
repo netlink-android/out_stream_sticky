@@ -11,9 +11,9 @@
       googletag.cmd.push(function () {
         googletag
           .defineSlot(
-            "/93656639,22942653061/Tinmoi.vn_Oustream/Tinmoi.vn_Passback_Oustream",
+            "/93656639/300x250_campaign",
             [300, 250],
-            "div-gpt-ad-1693194589701-0"
+            "div-gpt-ad-1693300480407-0"
           )
           .addService(googletag.pubads());
         googletag.pubads().enableSingleRequest();
@@ -264,11 +264,11 @@
           var bannerAfter = document.getElementById("bannerAfter");
           var closeBanner = document.getElementById("closeBanner");
           var idAdUnit = document.createElement("div");
-          idAdUnit.id = "div-gpt-ad-1693194589701-0";
+          idAdUnit.id = "div-gpt-ad-1693300480407-0";
           bannerAfter.appendChild(idAdUnit);
           var isClose = false;
           googletag.cmd.push(function () {
-            googletag.display("div-gpt-ad-1693194589701-0");
+            googletag.display("div-gpt-ad-1693300480407-0");
             googletag.pubads().addEventListener("slotOnload", (event) => {
               closeBanner.style.display = "block";
             });
@@ -450,7 +450,8 @@
       };
 
       Application.prototype.SAMPLE_AD_TAG_ =
-        "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,22942653061/Tinmoi.vn_Oustream/Tinmoi.vn_Vast_Test&description_url=https%3A%2F%2Ftinmoi.vn%2F&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+        "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x360&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+      // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,22942653061/Tinmoi.vn_Oustream/Tinmoi.vn_Vast_Test&description_url=https%3A%2F%2Ftinmoi.vn%2F&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
       Application.prototype.setVideoEndedCallbackEnabled = function (enable) {
         if (enable) {
           this.videoPlayer_.registerVideoEndedCallback(
@@ -462,7 +463,7 @@
       };
 
       Application.prototype.log = function (message) {
-        // console.log(message);
+        console.log(message);
       };
 
       Application.prototype.countdownUi = function (timer) {
@@ -505,11 +506,11 @@
         var bannerAfter = document.getElementById("bannerAfter");
         var closeBanner = document.getElementById("closeBanner");
         var idAdUnit = document.createElement("div");
-        idAdUnit.id = "div-gpt-ad-1693194589701-0";
+        idAdUnit.id = "div-gpt-ad-1693300480407-0";
         bannerAfter.appendChild(idAdUnit);
         var isClose = false;
         googletag.cmd.push(function () {
-          googletag.display("div-gpt-ad-1693194589701-0");
+          googletag.display("div-gpt-ad-1693300480407-0");
           googletag.pubads().addEventListener("slotOnload", (event) => {
             closeBanner.style.display = "block";
           });
@@ -906,10 +907,20 @@
       <button id="closeBanner" title="Close">&#709;</button>
     </div>
     <script type="text/javascript">
-      var application = null;
       window.onload = function () {
-        application = new Application();
+        var innerWidth = window.innerWidth;
+        var application = null;
+        if (innerWidth >= 768) {
+          application = new Application();
+        } else {
+          document.getElementById("bannerAfter").style.display = "none";
+        }
       };
+      window.addEventListener("resize", function () {
+        if (window.innerWidth < 768) {
+          document.getElementById("bannerAfter").style.display = "none";
+        }
+      });
     </script>
   </body>
 </html>
