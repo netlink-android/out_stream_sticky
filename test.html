@@ -42,7 +42,6 @@
         this.application_ = application;
         this.videoPlayer_ = videoPlayer;
         this.isMuted = isMuted;
-        this.customClickDiv_ = document.getElementById("customClick");
         this.contentCompleteCalled_ = false;
         google.ima.settings.setVpaidMode(
           google.ima.ImaSdkSettings.VpaidMode.ENABLED
@@ -51,8 +50,7 @@
         // google.ima.settings.setLocale('fr');
         this.adDisplayContainer_ = new google.ima.AdDisplayContainer(
           this.videoPlayer_.adContainer,
-          this.videoPlayer_.contentPlayer,
-          this.customClickDiv_
+          this.videoPlayer_.contentPlayer
         );
         this.adsLoader_ = new google.ima.AdsLoader(this.adDisplayContainer_);
         this.adsManager_ = null;
@@ -135,7 +133,7 @@
 
       Ads.prototype.startAdsManager_ = function (adsManager) {
         if (adsManager.isCustomClickTrackingUsed()) {
-          this.customClickDiv_.style.display = "table";
+          // this.customClickDiv_.style.display = "table";
         }
         if (this.isMuted) {
           this.adsManager_.setVolume(1);
@@ -383,17 +381,9 @@
     <script>
       var time = null;
       var progessValue = 0;
-      var playButton_;
+
       const Application = function () {
         this.mainSticky = document.getElementById("mainSticky");
-        playButton_ = document.getElementById("playpause");
-
-        playButton_.addEventListener(
-          "click",
-          this.bind_(this, this.onClick_),
-          false
-        );
-
         this.mute_ = document.getElementById("mute");
         this.mute_.addEventListener(
           "click",
@@ -407,23 +397,14 @@
           false
         );
 
-        //removeAds
-        this.close_ = document.getElementById("closeAds");
-        this.close_.addEventListener(
+        //resize
+        this.resizeads_ = document.getElementById("resizeads");
+        this.resizeads_.addEventListener(
           "click",
-          this.bind_(this, this.remove_),
+          this.bind_(this, this.resizeads),
           false
         );
-        this.close_.style.display = "none";
-
-        //ReloadAds
-        this.reloadAds_ = document.getElementById("reloadAds");
-        // this.reloadAds_.addEventListener(
-        //   "click",
-        //   this.bind_(this, this.onClick_),
-        //   false
-        // );
-        this.reloadAds_.style.display = "none";
+        this.isResizeads_ = false;
 
         //progess
         countdownUi = document.getElementById("countdownUi");
@@ -453,15 +434,21 @@
         this.adTagUrl_ = "";
         this.videoEndedCallback_ = this.bind_(this, this.onContentEnded_);
         this.setVideoEndedCallbackEnabled(true);
-        setTimeout(autoOnClick_, 3000);
+        setTimeout(this.bind_(this, this.onClick_), 3000);
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") {
+            this.ads_.resume();
+            countdownTimer();
+          } else {
+            this.ads_.pause();
+            clearInterval(time);
+          }
+        });
       };
-      function autoOnClick_() {
-        playButton_.click();
-      }
 
       Application.prototype.SAMPLE_AD_TAG_ =
         // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,22942653061/Tinmoi.vn_Oustream/Tinmoi.vn_Vast_Test&description_url=https%3A%2F%2Ftinmoi.vn%2F&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
-      "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=400x300&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+        "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=400x300&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
       // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
       // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x360&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
       Application.prototype.setVideoEndedCallbackEnabled = function (enable) {
@@ -507,15 +494,14 @@
       Application.prototype.resumeAfterAd = function () {
         // this.videoPlayer_.play();
         this.adsActive_ = false;
-        this.updateChrome_();
       };
       Application.prototype.close = function () {
-        playButton_.style.display = "none";
         this.fullscreenButton_.style.display = "none";
         this.mute_.style.display = "none";
-        // this.close_.style.display = "block";
-        // this.reloadAds_.style.display = "block";
-        mainSticky.classList.add("mainSticky--transition");
+        if (this.isResizeads_) {
+          this.mainSticky.classList.remove("mainSticky--scale");
+        }
+        this.mainSticky.classList.add("mainSticky--transition");
         var bannerAfter = document.getElementById("bannerAfter");
         var closeBanner = document.getElementById("closeBanner");
 
@@ -553,17 +539,12 @@
         this.adsActive_ = true;
         this.playing_ = true;
         this.videoPlayer_.pause();
-        this.updateChrome_();
       };
 
       /**
        * Pauses video on ad clicks.
        */
-      Application.prototype.adClicked = function () {
-        if (this.playing_) {
-          playButton_.click();
-        }
-      };
+      Application.prototype.adClicked = function () {};
 
       /**
        * Function binding helper function.
@@ -594,10 +575,19 @@
             countdownTimer();
           }
         }
-
         this.playing_ = !this.playing_;
-
-        this.updateChrome_();
+      };
+      Application.prototype.resizeads = function () {
+        if (this.isResizeads_) {
+          this.mainSticky.classList.remove("mainSticky--scale");
+          this.resizeads_.innerHTML = "&#x21d9;";
+          this.fullscreenButton_.style.display = "block";
+        } else {
+          this.mainSticky.classList.add("mainSticky--scale");
+          this.resizeads_.innerHTML = "&#x21d7;";
+          this.fullscreenButton_.style.display = "none";
+        }
+        this.isResizeads_ = !this.isResizeads_;
       };
 
       Application.prototype.onMute_ = function () {
@@ -623,6 +613,7 @@
 
       Application.prototype.onFullscreenClick_ = function () {
         if (this.fullscreen) {
+          this.resizeads_.style.display = "block";
           // The video is currently in fullscreen mode
           const cancelFullscreen =
             document.exitFullscreen ||
@@ -635,7 +626,7 @@
             this.onFullscreenChange_();
           }
         } else {
-          // Try to enter fullscreen mode in the browser
+          this.resizeads_.style.display = "none";
           const requestFullscreen =
             document.documentElement.requestFullscreen ||
             document.documentElement.webkitRequestFullscreen ||
@@ -659,14 +650,6 @@
       /**
        * Handles updating the play button image.
        */
-      Application.prototype.updateChrome_ = function () {
-        if (this.playing_) {
-          playButton_.textContent = "II";
-        } else {
-          // Unicode play symbol.
-          playButton_.textContent = String.fromCharCode(9654);
-        }
-      };
 
       /**
        * Removes the 'loadedmetadata' listener and makes the ad request.
@@ -747,13 +730,17 @@
         left: 0;
         display: none;
         opacity: 1;
-        transition: transform 0.5s, opacity 0.5s;
+        transition: transform 0.5s, opacity 0.5s, scale 0.3s;
+        transform-origin: bottom left;
         z-index: 10000;
       }
       .mainSticky--transition {
-        transform: translateY(500px);
+        transform: translateY(100%);
         opacity: 0;
         display: none;
+      }
+      .mainSticky--scale {
+        transform: scale(0.5);
       }
 
       #playpause {
@@ -766,6 +753,7 @@
         font-weight: bold;
         font-size: 15px;
         opacity: 0.5;
+        display: none;
         background-color: #fff;
         border-radius: 5px;
         border: 1px transparent solid;
@@ -814,27 +802,9 @@
         width: 640px;
         height: 360px;
       }
-
-      #companionDiv,
-      #customClick {
-        width: 728px;
-        display: none;
-      }
-      #customClick {
-        background-color: #807f80;
-        display: none;
-        text-align: center;
-      }
-
-      #customClickTextWrapper {
-        display: table-cell;
-        vertical-align: middle;
-        display: none;
-      }
-
       #mute {
         position: absolute;
-        left: 70px;
+        left: 15px;
         bottom: 15px;
         height: 20px;
         width: 40px;
@@ -855,55 +825,28 @@
         border: 1px #f00 solid;
         color: #f00;
       }
-
-      #closeAds {
+      #resizeads {
         position: absolute;
         right: 0px;
         top: 0px;
-        height: 20px;
-        width: 40px;
+        height: 30px;
+        width: 30px;
         border-style: none;
         font-weight: bold;
-        font-size: 15px;
-        opacity: 0.5;
-        background-color: #fff;
+        font-size: 18px;
+        background-color: #ffffff9f;
         border-radius: 5px;
         border: 1px transparent solid;
         color: #000;
         cursor: pointer;
-        border-color: #000;
+        border-color: #00000054;
         line-height: 0;
       }
 
-      #closeAds:hover {
-        border: 1px #f00 solid;
+      #resizeads:hover {
+        border: 1px rgba(255, 0, 0, 0.5) solid;
         color: #f00;
       }
-
-      #reloadAds {
-        position: absolute;
-        left: 0px;
-        top: 0px;
-        height: 20px;
-        width: 40px;
-        border-style: none;
-        font-weight: bold;
-        font-size: 15px;
-        opacity: 0.5;
-        background-color: #fff;
-        border-radius: 5px;
-        border: 1px transparent solid;
-        color: #000;
-        cursor: pointer;
-        border-color: #000;
-        line-height: 0;
-      }
-
-      #reloadAds:hover {
-        border: 1px #f00 solid;
-        color: #f00;
-      }
-
       #countdownUi {
         position: absolute;
         right: 0px;
@@ -954,7 +897,7 @@
         font-weight: bold;
         font-size: 20px;
         background-color: #fff;
-        border-radius: 5px 0 0 0;
+        border-radius: 0 5px 0 0;
         cursor: pointer;
         border-top: 2px solid #e1e1e1;
         border-left: 2px solid #e1e1e1;
@@ -974,20 +917,14 @@
       <div id="videoplayer">
         <video id="content"></video>
         <div id="adcontainer"></div>
-        <button id="playpause" title="Play/Pause">&#9654;</button>
         <button id="fullscreen" title="Full screen">
           [&nbsp;&nbsp;&nbsp;]
         </button>
         <button id="mute" title="Mute">🔇</button>
-        <button id="closeAds" title="Close">&#x2715;</button>
-        <button id="reloadAds" title="Reload">&#8634;</button>
+        <button id="resizeads" title="Resize">&#x21d9;</button>
         <div id="countdownUi"></div>
         <progress id="progressAds"></progress>
       </div>
-      <div id="customClick">
-        <div id="customClickTextWrapper"></div>
-      </div>
-      <div id="companionDiv"></div>
     </div>
     <div id="bannerAfter">
       <div id="div-gpt-ad-1693194589701-0"></div>
