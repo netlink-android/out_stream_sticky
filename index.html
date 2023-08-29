@@ -276,13 +276,13 @@
 
           closeBanner.addEventListener("click", function () {
             if (isClose) {
-              closeBanner.title = "Close";
-              closeBanner.innerHTML = "&#709;";
+              closeBanner.title = "Hidden";
+              closeBanner.innerHTML = "&#711;";
               bannerAfter.classList.remove("bannerAfterClose--transition");
               closeBanner.classList.remove("closeBanner--transition");
             } else {
-              closeBanner.title = "Open";
-              closeBanner.innerHTML = "&#708;";
+              closeBanner.title = "Show";
+              closeBanner.innerHTML = "&#710;";
               bannerAfter.classList.add("bannerAfterClose--transition");
               closeBanner.classList.add("closeBanner--transition");
             }
@@ -497,6 +497,9 @@
         this.adsActive_ = false;
       };
       Application.prototype.close = function () {
+        if (this.fullscreen) {
+          document.exitFullscreen();
+        }
         this.fullscreenButton_.style.display = "none";
         this.mute_.style.display = "none";
         if (this.isResizeads_) {
@@ -517,13 +520,13 @@
         });
         closeBanner.addEventListener("click", function () {
           if (isClose) {
-            closeBanner.title = "Close";
-            closeBanner.innerHTML = "&#709;";
+            closeBanner.title = "Hidden";
+            closeBanner.innerHTML = "&#711;";
             bannerAfter.classList.remove("bannerAfterClose--transition");
             closeBanner.classList.remove("closeBanner--transition");
           } else {
-            closeBanner.title = "Open";
-            closeBanner.innerHTML = "&#708;";
+            closeBanner.title = "Show";
+            closeBanner.innerHTML = "&#710;";
             bannerAfter.classList.add("bannerAfterClose--transition");
             closeBanner.classList.add("closeBanner--transition");
           }
@@ -872,7 +875,7 @@
         width: 40px;
         border-style: none;
         font-weight: bold;
-        font-size: 20px;
+        font-size: 40px;
         background-color: #fff;
         border-radius: 0 5px 0 0;
         cursor: pointer;
@@ -904,7 +907,7 @@
       </div>
     </div>
     <div id="bannerAfter">
-      <button id="closeBanner" title="Close">&#709;</button>
+      <button id="closeBanner" title="Hidden">&#711;</button>
     </div>
     <script type="text/javascript">
       window.onload = function () {
