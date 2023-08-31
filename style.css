@@ -18,23 +18,22 @@ body {
 #content-wrapper {
   position: relative;
 }
+#admainSticky{
+  height: 250px;
+  width: 300px;
+  margin-top: 1000px;
+}
 #mainSticky {
-  position: fixed;
-  bottom: 0;
-  left: 0;
   display: none;
   opacity: 1;
   transition: transform 0.5s, opacity 0.5s, scale 0.3s;
   transform-origin: bottom left;
   z-index: 10000;
 }
-.mainSticky--transition {
-  transform: translateY(100%);
-  opacity: 0;
-  display: none;
-}
-.mainSticky--scale {
-  transform: scale(0.5);
+.mainSticky--outstream {
+  position: fixed;
+  bottom: 0;
+  left: 0;
 }
 #fullscreen {
   position: absolute;

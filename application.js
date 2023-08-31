@@ -1,6 +1,7 @@
 var time = null;
 var progessValue = 0;
-
+var checkScroll = true;
+var resizeads_;
 const Application = function () {
   this.mainSticky = document.getElementById("mainSticky");
   this.mute_ = document.getElementById("mute");
@@ -13,13 +14,6 @@ const Application = function () {
   );
 
   //resize
-  this.resizeads_ = document.getElementById("resizeads");
-  this.resizeads_.addEventListener(
-    "click",
-    this.bind_(this, this.resizeads),
-    false
-  );
-  this.isResizeads_ = false;
 
   //progess
   countdownUi = document.getElementById("countdownUi");
@@ -62,10 +56,8 @@ const Application = function () {
 };
 
 Application.prototype.SAMPLE_AD_TAG_ =
-  // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,22942653061/Tinmoi.vn_Oustream/Tinmoi.vn_Vast_Test&description_url=https%3A%2F%2Ftinmoi.vn%2F&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
-  "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=400x300&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
-// "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
-// "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x360&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+  "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=[placeholder]&tfcd=0&npa=0&sz=400x300&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+// "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,22942653061/Tinmoi.vn_Oustream/Tinmoi.vn_Vast_Test&description_url=https%3A%2F%2Ftinmoi.vn%2F&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
 Application.prototype.setVideoEndedCallbackEnabled = function (enable) {
   if (enable) {
     this.videoPlayer_.registerVideoEndedCallback(this.videoEndedCallback_);
@@ -76,6 +68,11 @@ Application.prototype.setVideoEndedCallbackEnabled = function (enable) {
 
 Application.prototype.log = function (message) {
   console.log(message);
+};
+Application.prototype.onDelete_ = function (message) {
+  checkScroll = false;
+  this.mainSticky.classList.remove("mainSticky--outstream");
+  resizeads_.style.display = "none";
 };
 
 Application.prototype.countdownUi = function (timer) {
@@ -109,31 +106,33 @@ Application.prototype.resumeAfterAd = function () {
   this.adsActive_ = false;
 };
 Application.prototype.close = function () {
+  if (this.fullscreen) {
+    document.exitFullscreen();
+  }
   this.fullscreenButton_.style.display = "none";
   this.mute_.style.display = "none";
-  if (this.isResizeads_) {
-    this.mainSticky.classList.remove("mainSticky--scale");
-  }
-  this.mainSticky.classList.add("mainSticky--transition");
+  this.mainSticky.style.display = "none";
   var bannerAfter = document.getElementById("bannerAfter");
   var closeBanner = document.getElementById("closeBanner");
-
+  var idAdUnit = document.createElement("div");
+  idAdUnit.id = "div-gpt-ad-1693468092398-0";
+  bannerAfter.appendChild(idAdUnit);
   var isClose = false;
   googletag.cmd.push(function () {
-    googletag.display("div-gpt-ad-1693194589701-0");
+    googletag.display("div-gpt-ad-1693468092398-0");
     googletag.pubads().addEventListener("slotOnload", (event) => {
       closeBanner.style.display = "block";
     });
   });
   closeBanner.addEventListener("click", function () {
     if (isClose) {
-      closeBanner.title = "Close";
-      closeBanner.innerHTML = "&#709;";
+      closeBanner.title = "Hidden";
+      closeBanner.innerHTML = "&#711;";
       bannerAfter.classList.remove("bannerAfterClose--transition");
       closeBanner.classList.remove("closeBanner--transition");
     } else {
-      closeBanner.title = "Open";
-      closeBanner.innerHTML = "&#708;";
+      closeBanner.title = "Show";
+      closeBanner.innerHTML = "&#710;";
       bannerAfter.classList.add("bannerAfterClose--transition");
       closeBanner.classList.add("closeBanner--transition");
     }
@@ -143,6 +142,23 @@ Application.prototype.close = function () {
 Application.prototype.remove_ = function () {};
 Application.prototype.autoplayAds_ = function () {
   mainSticky.style.display = "block";
+  var divTop = this.mainSticky.getBoundingClientRect().top;
+  var divHeight = this.mainSticky.scrollHeight;
+  resizeads_ = document.getElementById("resizeads");
+  resizeads_.addEventListener("click", this.bind_(this, this.onDelete_), false);
+  resizeads_.style.display = "none";
+  window.addEventListener("scroll", function () {
+    var divClientHeight = this.scrollY;
+    if (checkScroll) {
+      if (divClientHeight >= divTop + divHeight / 2) {
+        this.mainSticky.classList.add("mainSticky--outstream");
+        resizeads_.style.display = "block";
+      } else {
+        resizeads_.style.display = "none";
+        this.mainSticky.classList.remove("mainSticky--outstream");
+      }
+    }
+  });
 };
 
 /**
@@ -189,18 +205,6 @@ Application.prototype.onClick_ = function () {
     }
   }
   this.playing_ = !this.playing_;
-};
-Application.prototype.resizeads = function () {
-  if (this.isResizeads_) {
-    this.mainSticky.classList.remove("mainSticky--scale");
-    this.resizeads_.innerHTML = "&#x21d9;";
-    this.fullscreenButton_.style.display = "block";
-  } else {
-    this.mainSticky.classList.add("mainSticky--scale");
-    this.resizeads_.innerHTML = "&#x21d7;";
-    this.fullscreenButton_.style.display = "none";
-  }
-  this.isResizeads_ = !this.isResizeads_;
 };
 
 Application.prototype.onMute_ = function () {

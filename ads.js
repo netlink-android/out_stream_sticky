@@ -4,9 +4,7 @@ var Ads = function (application, videoPlayer, isMuted) {
   this.videoPlayer_ = videoPlayer;
   this.isMuted = isMuted;
   this.contentCompleteCalled_ = false;
-  google.ima.settings.setVpaidMode(
-    google.ima.ImaSdkSettings.VpaidMode.ENABLED
-  );
+  google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
   // Call setLocale() to localize language text and downloaded swfs
   // google.ima.settings.setLocale('fr');
   this.adDisplayContainer_ = new google.ima.AdDisplayContainer(
@@ -68,11 +66,7 @@ Ads.prototype.resume = function () {
 
 Ads.prototype.resize = function (width, height) {
   if (this.adsManager_) {
-    this.adsManager_.resize(
-      width,
-      height,
-      google.ima.ViewMode.FULLSCREEN
-    );
+    this.adsManager_.resize(width, height, google.ima.ViewMode.FULLSCREEN);
   }
 };
 
@@ -154,12 +148,7 @@ Ads.prototype.startAdsManager_ = function (adsManager) {
     google.ima.AdEvent.Type.THIRD_QUARTILE,
   ];
   for (var index in events) {
-    adsManager.addEventListener(
-      events[index],
-      this.onAdEvent_,
-      false,
-      this
-    );
+    adsManager.addEventListener(events[index], this.onAdEvent_, false, this);
   }
 
   var initWidth, initHeight;
@@ -213,9 +202,7 @@ Ads.prototype.onAdEvent_ = function (adEvent) {
 };
 
 Ads.prototype.onAdError_ = function (adErrorEvent) {
-  this.application_.log(
-    "Ad error: " + adErrorEvent.getError().toString()
-  );
+  this.application_.log("Ad error: " + adErrorEvent.getError().toString());
   if (count <= 3) {
     setTimeout(() => {
       this.application_.loadAds_();
@@ -224,9 +211,12 @@ Ads.prototype.onAdError_ = function (adErrorEvent) {
   } else {
     var bannerAfter = document.getElementById("bannerAfter");
     var closeBanner = document.getElementById("closeBanner");
+    var idAdUnit = document.createElement("div");
+    idAdUnit.id = "div-gpt-ad-1693468092398-0";
+    bannerAfter.appendChild(idAdUnit);
     var isClose = false;
     googletag.cmd.push(function () {
-      googletag.display("div-gpt-ad-1693194589701-0");
+      googletag.display("div-gpt-ad-1693468092398-0");
       googletag.pubads().addEventListener("slotOnload", (event) => {
         closeBanner.style.display = "block";
       });
@@ -234,13 +224,13 @@ Ads.prototype.onAdError_ = function (adErrorEvent) {
 
     closeBanner.addEventListener("click", function () {
       if (isClose) {
-        closeBanner.title = "Close";
-        closeBanner.innerHTML = "&#709;";
+        closeBanner.title = "Hidden";
+        closeBanner.innerHTML = "&#711;";
         bannerAfter.classList.remove("bannerAfterClose--transition");
         closeBanner.classList.remove("closeBanner--transition");
       } else {
-        closeBanner.title = "Open";
-        closeBanner.innerHTML = "&#708;";
+        closeBanner.title = "Show";
+        closeBanner.innerHTML = "&#710;";
         bannerAfter.classList.add("bannerAfterClose--transition");
         closeBanner.classList.add("closeBanner--transition");
       }
