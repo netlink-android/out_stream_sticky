@@ -1,25 +1,17 @@
-// Copyright 2013 Google Inc. All Rights Reserved.
-// You may study, modify, and use this example for any purpose.
-// Note that this example is provided "as is", WITHOUT WARRANTY
-// of any kind either expressed or implied.
-
-/**
- * Shows how to use the IMA SDK to request and display ads.
- */
 var count = 1;
 var Ads = function (application, videoPlayer, isMuted) {
   this.application_ = application;
   this.videoPlayer_ = videoPlayer;
   this.isMuted = isMuted;
-  this.customClickDiv_ = document.getElementById("customClick");
   this.contentCompleteCalled_ = false;
-  google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
+  google.ima.settings.setVpaidMode(
+    google.ima.ImaSdkSettings.VpaidMode.ENABLED
+  );
   // Call setLocale() to localize language text and downloaded swfs
   // google.ima.settings.setLocale('fr');
   this.adDisplayContainer_ = new google.ima.AdDisplayContainer(
     this.videoPlayer_.adContainer,
-    this.videoPlayer_.contentPlayer,
-    this.customClickDiv_
+    this.videoPlayer_.contentPlayer
   );
   this.adsLoader_ = new google.ima.AdsLoader(this.adDisplayContainer_);
   this.adsManager_ = null;
@@ -46,10 +38,10 @@ Ads.prototype.initialUserAction = function () {
 Ads.prototype.requestAds = function (adTagUrl) {
   var adsRequest = new google.ima.AdsRequest();
   adsRequest.adTagUrl = adTagUrl;
-  adsRequest.linearAdSlotWidth = 640;
-  adsRequest.linearAdSlotHeight = 480;
-  adsRequest.nonLinearAdSlotWidth = 640;
-  adsRequest.nonLinearAdSlotHeight = 480;
+  adsRequest.linearAdSlotWidth = this.videoPlayer_.width;
+  adsRequest.linearAdSlotHeight = this.videoPlayer_.height;
+  adsRequest.nonLinearAdSlotWidth = this.videoPlayer_.width;
+  adsRequest.nonLinearAdSlotHeight = this.videoPlayer_.height;
   this.adsLoader_.requestAds(adsRequest);
 };
 
@@ -76,7 +68,11 @@ Ads.prototype.resume = function () {
 
 Ads.prototype.resize = function (width, height) {
   if (this.adsManager_) {
-    this.adsManager_.resize(width, height, google.ima.ViewMode.FULLSCREEN);
+    this.adsManager_.resize(
+      width,
+      height,
+      google.ima.ViewMode.FULLSCREEN
+    );
   }
 };
 
@@ -98,7 +94,7 @@ Ads.prototype.onAdsManagerLoaded_ = function (adsManagerLoadedEvent) {
 
 Ads.prototype.startAdsManager_ = function (adsManager) {
   if (adsManager.isCustomClickTrackingUsed()) {
-    this.customClickDiv_.style.display = "table";
+    // this.customClickDiv_.style.display = "table";
   }
   if (this.isMuted) {
     this.adsManager_.setVolume(1);
@@ -158,7 +154,12 @@ Ads.prototype.startAdsManager_ = function (adsManager) {
     google.ima.AdEvent.Type.THIRD_QUARTILE,
   ];
   for (var index in events) {
-    adsManager.addEventListener(events[index], this.onAdEvent_, false, this);
+    adsManager.addEventListener(
+      events[index],
+      this.onAdEvent_,
+      false,
+      this
+    );
   }
 
   var initWidth, initHeight;
@@ -212,16 +213,38 @@ Ads.prototype.onAdEvent_ = function (adEvent) {
 };
 
 Ads.prototype.onAdError_ = function (adErrorEvent) {
-  this.application_.log("Ad error: " + adErrorEvent.getError().toString());
+  this.application_.log(
+    "Ad error: " + adErrorEvent.getError().toString()
+  );
   if (count <= 3) {
     setTimeout(() => {
       this.application_.loadAds_();
-    }, 10000);
+    }, 3000);
     count++;
   } else {
-    var bannerAfter = document.getElementById("div-gpt-ad-1692948587499-0");
+    var bannerAfter = document.getElementById("bannerAfter");
+    var closeBanner = document.getElementById("closeBanner");
+    var isClose = false;
     googletag.cmd.push(function () {
-      googletag.display("div-gpt-ad-1692948587499-0");
+      googletag.display("div-gpt-ad-1693194589701-0");
+      googletag.pubads().addEventListener("slotOnload", (event) => {
+        closeBanner.style.display = "block";
+      });
+    });
+
+    closeBanner.addEventListener("click", function () {
+      if (isClose) {
+        closeBanner.title = "Close";
+        closeBanner.innerHTML = "&#709;";
+        bannerAfter.classList.remove("bannerAfterClose--transition");
+        closeBanner.classList.remove("closeBanner--transition");
+      } else {
+        closeBanner.title = "Open";
+        closeBanner.innerHTML = "&#708;";
+        bannerAfter.classList.add("bannerAfterClose--transition");
+        closeBanner.classList.add("closeBanner--transition");
+      }
+      isClose = !isClose;
     });
   }
   if (this.adsManager_) {

@@ -1,12 +1,8 @@
 var time = null;
 var progessValue = 0;
-var playButton_;
+
 const Application = function () {
   this.mainSticky = document.getElementById("mainSticky");
-  playButton_ = document.getElementById("playpause");
-
-  playButton_.addEventListener("click", this.bind_(this, this.onClick_), false);
-
   this.mute_ = document.getElementById("mute");
   this.mute_.addEventListener("click", this.bind_(this, this.onMute_), false);
   this.fullscreenButton_ = document.getElementById("fullscreen");
@@ -16,19 +12,14 @@ const Application = function () {
     false
   );
 
-  //removeAds
-  this.close_ = document.getElementById("closeAds");
-  this.close_.addEventListener("click", this.bind_(this, this.remove_), false);
-  this.close_.style.display = "none";
-
-  //ReloadAds
-  this.reloadAds_ = document.getElementById("reloadAds");
-  this.reloadAds_.addEventListener(
+  //resize
+  this.resizeads_ = document.getElementById("resizeads");
+  this.resizeads_.addEventListener(
     "click",
-    this.bind_(this, this.onClick_),
+    this.bind_(this, this.resizeads),
     false
   );
-  this.reloadAds_.style.display = "none";
+  this.isResizeads_ = false;
 
   //progess
   countdownUi = document.getElementById("countdownUi");
@@ -52,27 +43,29 @@ const Application = function () {
   this.adsActive_ = false;
   this.adsDone_ = false;
   this.fullscreen = false;
-  this.adsMute_ = true;
+  this.adsMute_ = false;
   this.videoPlayer_ = new VideoPlayer();
   this.ads_ = new Ads(this, this.videoPlayer_, this.adsMute_);
   this.adTagUrl_ = "";
   this.videoEndedCallback_ = this.bind_(this, this.onContentEnded_);
   this.setVideoEndedCallbackEnabled(true);
-  setTimeout(autoOnClick_, 3000);
+  setTimeout(this.bind_(this, this.onClick_), 3000);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      this.ads_.resume();
+      countdownTimer();
+    } else {
+      this.ads_.pause();
+      clearInterval(time);
+    }
+  });
 };
-function autoOnClick_() {
-  playButton_.click();
-}
 
 Application.prototype.SAMPLE_AD_TAG_ =
-  // "https://pubads.g.doubleclick.net/" +
-  // "gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&" +
-  // "cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&" +
-  // "gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&" +
-  // "correlator=";
-  "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/outstream_video_OO&description_url=http%3A%2F%2Fnetlink.vn&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
-// "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,52958642/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
-
+  // "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639,22942653061/Tinmoi.vn_Oustream/Tinmoi.vn_Vast_Test&description_url=https%3A%2F%2Ftinmoi.vn%2F&tfcd=0&npa=0&sz=400x300%7C640x360%7C640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+  "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=400x300&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+// "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+// "https://pubads.g.doubleclick.net/gampad/ads?iu=/93656639/video_outstream_campain&description_url=https%3A%2F%2Fnetlink.vn%2F&tfcd=0&npa=0&sz=640x360&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
 Application.prototype.setVideoEndedCallbackEnabled = function (enable) {
   if (enable) {
     this.videoPlayer_.registerVideoEndedCallback(this.videoEndedCallback_);
@@ -90,6 +83,7 @@ Application.prototype.countdownUi = function (timer) {
   progessValue = timer;
   countdownTimer();
 };
+
 function countdownTimer() {
   time = setInterval(function () {
     progressAds.value = progessValue;
@@ -105,38 +99,72 @@ function countdownTimer() {
       ":" +
       (seconds >= 10 ? seconds : "0" + seconds);
   }, 1000);
-}Application.prototype.resumeAfterAd = function () {
-  this.videoPlayer_.play();
+}
+
+/**
+ * Handles resuming content following ads.
+ */
+Application.prototype.resumeAfterAd = function () {
+  // this.videoPlayer_.play();
   this.adsActive_ = false;
-  this.updateChrome_();
 };
 Application.prototype.close = function () {
-  playButton_.style.display = "none";
   this.fullscreenButton_.style.display = "none";
   this.mute_.style.display = "none";
-  this.close_.style.display = "block";
-  // this.reloadAds_.style.display = "block";
-  // this.onClick_();
+  if (this.isResizeads_) {
+    this.mainSticky.classList.remove("mainSticky--scale");
+  }
+  this.mainSticky.classList.add("mainSticky--transition");
+  var bannerAfter = document.getElementById("bannerAfter");
+  var closeBanner = document.getElementById("closeBanner");
+
+  var isClose = false;
+  googletag.cmd.push(function () {
+    googletag.display("div-gpt-ad-1693194589701-0");
+    googletag.pubads().addEventListener("slotOnload", (event) => {
+      closeBanner.style.display = "block";
+    });
+  });
+  closeBanner.addEventListener("click", function () {
+    if (isClose) {
+      closeBanner.title = "Close";
+      closeBanner.innerHTML = "&#709;";
+      bannerAfter.classList.remove("bannerAfterClose--transition");
+      closeBanner.classList.remove("closeBanner--transition");
+    } else {
+      closeBanner.title = "Open";
+      closeBanner.innerHTML = "&#708;";
+      bannerAfter.classList.add("bannerAfterClose--transition");
+      closeBanner.classList.add("closeBanner--transition");
+    }
+    isClose = !isClose;
+  });
 };
-Application.prototype.remove_ = function () {
-  mainSticky.classList.add("mainSticky--transition");
-};
+Application.prototype.remove_ = function () {};
 Application.prototype.autoplayAds_ = function () {
   mainSticky.style.display = "block";
 };
+
+/**
+ * Handles pausing content for ad breaks.
+ */
 Application.prototype.pauseForAd = function () {
   this.adsActive_ = true;
   this.playing_ = true;
   this.videoPlayer_.pause();
-  this.updateChrome_();
-};
-Application.prototype.adClicked = function () {
-  if (this.playing_) {
-    playButton_.click();
-  }
 };
 
+/**
+ * Pauses video on ad clicks.
+ */
+Application.prototype.adClicked = function () {};
 
+/**
+ * Function binding helper function.
+ * @param {!Object} thisObj object to bind function.
+ * @param {!Function} fn function being bound to object.
+ * @return {!Function} returns the bound function.
+ */
 Application.prototype.bind_ = function (thisObj, fn) {
   return function () {
     fn.apply(thisObj, arguments);
@@ -160,10 +188,19 @@ Application.prototype.onClick_ = function () {
       countdownTimer();
     }
   }
-
   this.playing_ = !this.playing_;
-
-  this.updateChrome_();
+};
+Application.prototype.resizeads = function () {
+  if (this.isResizeads_) {
+    this.mainSticky.classList.remove("mainSticky--scale");
+    this.resizeads_.innerHTML = "&#x21d9;";
+    this.fullscreenButton_.style.display = "block";
+  } else {
+    this.mainSticky.classList.add("mainSticky--scale");
+    this.resizeads_.innerHTML = "&#x21d7;";
+    this.fullscreenButton_.style.display = "none";
+  }
+  this.isResizeads_ = !this.isResizeads_;
 };
 
 Application.prototype.onMute_ = function () {
@@ -189,6 +226,7 @@ Application.prototype.updateMuted_ = function () {
 
 Application.prototype.onFullscreenClick_ = function () {
   if (this.fullscreen) {
+    this.resizeads_.style.display = "block";
     // The video is currently in fullscreen mode
     const cancelFullscreen =
       document.exitFullscreen ||
@@ -201,7 +239,7 @@ Application.prototype.onFullscreenClick_ = function () {
       this.onFullscreenChange_();
     }
   } else {
-    // Try to enter fullscreen mode in the browser
+    this.resizeads_.style.display = "none";
     const requestFullscreen =
       document.documentElement.requestFullscreen ||
       document.documentElement.webkitRequestFullscreen ||
@@ -225,14 +263,6 @@ Application.prototype.onFullscreenClick_ = function () {
 /**
  * Handles updating the play button image.
  */
-Application.prototype.updateChrome_ = function () {
-  if (this.playing_) {
-    playButton_.textContent = "II";
-  } else {
-    // Unicode play symbol.
-    playButton_.textContent = String.fromCharCode(9654);
-  }
-};
 
 /**
  * Removes the 'loadedmetadata' listener and makes the ad request.

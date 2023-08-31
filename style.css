@@ -21,40 +21,21 @@ body {
 #mainSticky {
   position: fixed;
   bottom: 0;
+  left: 0;
   display: none;
   opacity: 1;
-  transition: transform 0.3s, opacity 0.5s;
+  transition: transform 0.5s, opacity 0.5s, scale 0.3s;
+  transform-origin: bottom left;
+  z-index: 10000;
 }
 .mainSticky--transition {
-  transform: translateY(500px);
+  transform: translateY(100%);
   opacity: 0;
   display: none;
 }
-
-#playpause {
-  position: absolute;
-  left: 15px;
-  bottom: 15px;
-  height: 20px;
-  width: 40px;
-  border-style: none;
-  font-weight: bold;
-  font-size: 15px;
-  opacity: 0.5;
-  background-color: #fff;
-  border-radius: 5px;
-  border: 1px transparent solid;
-  color: #000;
-  cursor: pointer;
-  border-color: #000;
-  line-height: 0;
+.mainSticky--scale {
+  transform: scale(0.5);
 }
-
-#playpause:hover {
-  border: 1px #f00 solid;
-  color: #f00;
-}
-
 #fullscreen {
   position: absolute;
   bottom: 15px;
@@ -89,27 +70,9 @@ body {
   width: 640px;
   height: 360px;
 }
-
-#companionDiv,
-#customClick {
-  width: 728px;
-  display: none;
-}
-#customClick {
-  background-color: #807f80;
-  display: none;
-  text-align: center;
-}
-
-#customClickTextWrapper {
-  display: table-cell;
-  vertical-align: middle;
-  display: none;
-}
-
 #mute {
   position: absolute;
-  left: 70px;
+  left: 15px;
   bottom: 15px;
   height: 20px;
   width: 40px;
@@ -130,55 +93,28 @@ body {
   border: 1px #f00 solid;
   color: #f00;
 }
-
-#closeAds {
+#resizeads {
   position: absolute;
   right: 0px;
   top: 0px;
-  height: 20px;
-  width: 40px;
+  height: 30px;
+  width: 30px;
   border-style: none;
   font-weight: bold;
-  font-size: 15px;
-  opacity: 0.5;
-  background-color: #fff;
+  font-size: 18px;
+  background-color: #ffffff9f;
   border-radius: 5px;
   border: 1px transparent solid;
   color: #000;
   cursor: pointer;
-  border-color: #000;
+  border-color: #00000054;
   line-height: 0;
 }
 
-#closeAds:hover {
-  border: 1px #f00 solid;
+#resizeads:hover {
+  border: 1px rgba(255, 0, 0, 0.5) solid;
   color: #f00;
 }
-
-#reloadAds {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  height: 20px;
-  width: 40px;
-  border-style: none;
-  font-weight: bold;
-  font-size: 15px;
-  opacity: 0.5;
-  background-color: #fff;
-  border-radius: 5px;
-  border: 1px transparent solid;
-  color: #000;
-  cursor: pointer;
-  border-color: #000;
-  line-height: 0;
-}
-
-#reloadAds:hover {
-  border: 1px #f00 solid;
-  color: #f00;
-}
-
 #countdownUi {
   position: absolute;
   right: 0px;
@@ -210,10 +146,35 @@ progress::-webkit-progress-value {
 
 #bannerAfter {
   position: fixed;
-  left: 0px;
+  left: 0;
   bottom: 0px;
   height: 250px;
   width: 300px;
+  transition: transform 0.7s;
+  z-index: 9999;
+}
+
+#closeBanner {
+  position: absolute;
+  left: 0px;
+  top: -20px;
+  height: 20px;
+  display: none;
+  width: 40px;
+  border-style: none;
+  font-weight: bold;
+  font-size: 40px;
+  background-color: #fff;
+  border-radius: 0 5px 0 0;
   cursor: pointer;
-  line-height: 0;
+  border-top: 2px solid #e1e1e1;
+  border-left: 2px solid #e1e1e1;
+  border-right: 2px solid #e1e1e1;
+  transition: transform 0.7s;
+}
+.bannerAfterClose--transition {
+  transform: translateY(100%);
+}
+.closeBanner--transition {
+  transform: translateY(0%);
 }
