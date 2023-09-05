@@ -36,7 +36,7 @@ const Application = function () {
   this.adsActive_ = false;
   this.adsDone_ = false;
   this.fullscreen = false;
-  this.adsMute_ = true;
+  this.adsMute_ = false;
   this.videoPlayer_ = new VideoPlayer();
   this.ads_ = new Ads(this, this.videoPlayer_, this.adsMute_);
   this.adTagUrl_ = "";
@@ -54,31 +54,24 @@ const Application = function () {
       clearInterval(time);
     }
   });
-  document.addEventListener("scroll", () => {
-    if (!checkScroll) {
-      if (divView_(this.mainSticky)) {
-        if (!isView) {
-          this.ads_.resume();
-          countdownTimer();
-        }
-        isView = true;
-      } else {
-        if (isView) {
-          this.ads_.pause();
-          clearInterval(time);
-        }
-        isView = false;
-      }
-    }else{
-      if (divView_(this.mainSticky)) {
-        if (!isView) {
-          this.ads_.resume();
-          countdownTimer();
-        }
-        isView = true;
-      }
-    }
-  });
+  // document.addEventListener('scroll', () => {
+  //   if (!checkScroll) {
+  //     if (divView_(this.mainSticky)) {
+  //       isView = true;
+  //       this.ads_.resume();
+  //       countdownTimer();
+  //     } else {
+  //       isView = false;
+  //       this.ads_.pause();
+  //       clearInterval(time);
+  //     }
+  //   }
+  //   // else {
+  //   //   this.ads_.resume();
+  //   //   countdownTimer();
+  //   // }
+
+  // })
 };
 
 function divView_(element) {
@@ -143,7 +136,7 @@ function countdownTimer() {
       (minutes > 11 ? minutes : "0" + minutes) +
       ":" +
       (seconds >= 10 ? seconds : "0" + seconds);
-  }, 999);
+  }, 1000);
 }
 
 /**
@@ -193,24 +186,26 @@ Application.prototype.autoplayAds_ = function () {
   resizeads_ = document.getElementById("resizeads");
   resizeads_.addEventListener("click", this.bind_(this, this.onDelete_), false);
   resizeads_.style.display = "none";
-  window.addEventListener("scroll", function () {
-    if (checkScroll) {
-      if (!divView_(this.mainSticky) && isView) {
-        this.mainSticky.classList.add("mainSticky--outstream");
-        resizeads_.style.display = "block";
+  document.addEventListener("scroll", () => {
+    if (divView_(this.mainSticky)) {
+      if (!isView) {
+        this.ads_.resume();
+        countdownTimer();
       }
+      isView = true;
+    } else {
+      if (isView) {
+        this.ads_.pause();
+        clearInterval(time);
+      }
+      isView = false;
     }
   });
   if (!divView_(this.mainSticky)) {
-    isView = false;
     this.ads_.pause();
     clearInterval(time);
   }
 };
-
-/**
- * Handles pausing content for ad breaks.
- */
 Application.prototype.pauseForAd = function () {
   this.adsActive_ = true;
   this.playing_ = true;
